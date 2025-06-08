@@ -1,6 +1,6 @@
 {
     "name": "chess-extension",
-    "displayName": "Chess",
+    "displayName": "Chess with AI",
     "description": "Interactive chess game with AI-powered move recommendations for VS Code",
     "version": "0.0.1",
     "publisher": "ekzhu",
