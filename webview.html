@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chess Board</title>
+    <style>
+        /* Basic chessboard styles */
+        .chess-board-container {
+            display: inline-block;
+            position: relative;
+            margin: 20px auto;
+        }
+
+        .chess-board {
+            display: flex;
+            flex-direction: column;
+            width: 400px;
+            border: 3px solid #8b4513;
+            background: #eee;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .rank-labels {
+            position: absolute;
+            left: -25px;
+            top: 3px;
+            display: flex;
+            flex-direction: column;
+            height: 400px;
+            justify-content: space-around;
+            align-items: center;
+            font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+        }
+
+        .file-labels {
+            position: absolute;
+            bottom: -25px;
+            left: 3px;
+            display: flex;
+            width: 400px;
+            justify-content: space-around;
+            align-items: center;
+            font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+        }
+
+        .rank-label,
+        .file-label {
+            font-size: 14px;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chess-row {
+            display: flex;
+        }
+
+        .chess-square {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            background: #f0d9b5;
+            font-size: 32px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .chess-square.selected {
+            background: #baca44 !important;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .chess-square:hover {
+            opacity: 0.8;
+        }
+
+        .chess-row:nth-child(even) .chess-square:nth-child(odd),
+        .chess-row:nth-child(odd) .chess-square:nth-child(even) {
+            background: #b58863;
+        }
+
+        .piece {
+            user-select: none;
+            text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        button {
+            margin: 10px auto;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s;
+            display: block;
+        }
+
+        button:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .recommendation {
+            margin: 20px auto;
+            padding: 15px;
+            border: 2px solid #4CAF50;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            border-radius: 10px;
+            max-width: 400px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .recommendation strong {
+            color: #4CAF50;
+        }
+
+        /* Game Layout */
+        .game-container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 30px;
+            margin: 20px 0;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .sidebar h3 {
+            margin: 0 0 15px 0;
+            color: #4CAF50;
+            text-align: center;
+            font-size: 18px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .captured-pieces {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            min-height: 40px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .captured-piece {
+            font-size: 24px;
+            text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+        }
+
+        .player-section {
+            margin-bottom: 20px;
+        }
+
+        .player-label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #fff;
+        }
+
+        .move-log {
+            max-height: 300px;
+            overflow-y: auto;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
+            padding: 10px;
+        }
+
+        .move-entry {
+            display: flex;
+            justify-content: space-between;
+            padding: 3px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .move-entry:last-child {
+            border-bottom: none;
+        }
+
+        .move-number {
+            font-weight: bold;
+            color: #4CAF50;
+            width: 30px;
+        }
+
+        .move-pair {
+            display: flex;
+            gap: 15px;
+            flex: 1;
+        }
+
+        .white-move,
+        .black-move {
+            min-width: 60px;
+            position: relative;
+        }
+
+        .move-label {
+            font-size: 10px;
+            color: #4CAF50;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 2px;
+        }
+
+        .timer {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #4CAF50;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+            margin-bottom: 10px;
+        }
+
+        .center-column {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Move Animation Styles */
+        .move-trace {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        @keyframes moveTrace {
+            0% {
+                opacity: 0;
+                transform: rotate(var(--rotation-angle, 0deg)) scale(0.5);
+            }
+
+            20% {
+                opacity: 1;
+                transform: rotate(var(--rotation-angle, 0deg)) scale(1);
+            }
+
+            80% {
+                opacity: 1;
+                transform: rotate(var(--rotation-angle, 0deg)) scale(1);
+            }
+
+            100% {
+                opacity: 0;
+                transform: rotate(var(--rotation-angle, 0deg)) scale(0.5);
+            }
+        }
+
+        .square-highlight {
+            animation: squareHighlight 1s ease-in-out;
+        }
+
+        @keyframes squareHighlight {
+
+            0%,
+            100% {
+                background-color: inherit;
+            }
+
+            50% {
+                background-color: rgba(255, 215, 0, 0.4) !important;
+            }
+        }
+
+        /* Responsive design */
+        @media (max-width: 1200px) {
+            .game-container {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .sidebar {
+                width: 400px;
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/chess.js@1.0.0-beta.6/chess.min.js"></script>
+</head>
+
+<body>
+    <div id="root">Loading...</div>
+    <script>
+        const vscode = acquireVsCodeApi();
+        const { useState, useEffect } = React;
+
+        function Square({ square, piece, isSelected, onClick }) {
+            return React.createElement('div', {
+                className: `chess-square${isSelected ? ' selected' : ''}`,
+                onClick: () => onClick(square)
+            }, piece ? React.createElement('span', { className: 'piece' }, pieceToSymbol(piece)) : null);
+        }
+
+        function fenToBoard(fen) {
+            const rows = fen.split(' ')[0].split('/');
+            return rows.map(row => {
+                const result = [];
+                for (const char of row) {
+                    if (isNaN(Number(char))) {
+                        result.push(char);
+                    } else {
+                        for (let i = 0; i < Number(char); i++) result.push(null);
+                    }
+                }
+                return result;
+            });
+        }
+
+        // Convert FEN piece notation to Unicode chess symbols
+        function pieceToSymbol(piece) {
+            const pieces = {
+                'K': '♔', 'Q': '♕', 'R': '♖', 'B': '♗', 'N': '♘', 'P': '♙',
+                'k': '♚', 'q': '♛', 'r': '♜', 'b': '♝', 'n': '♞', 'p': '♟'
+            };
+            return pieces[piece] || piece;
+        }
+
+        const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+
+        // Function to show move animation
+        function showMoveTrace(fromSquare, toSquare) {
+            const boardContainer = document.querySelector('.chess-board-container');
+            const chessBoard = document.querySelector('.chess-board');
+            if (!boardContainer || !chessBoard) return;
+
+            // Calculate square positions (0-7 for files and ranks)
+            const fromFile = files.indexOf(fromSquare[0]);
+            const fromRank = 8 - parseInt(fromSquare[1]);
+            const toFile = files.indexOf(toSquare[0]);
+            const toRank = 8 - parseInt(toSquare[1]);
+
+            // Calculate pixel positions relative to the chess board (50px per square)
+            // Add 3px for the border offset
+            const borderOffset = 3;
+            const fromX = fromFile * 50 + 25 + borderOffset; // Center of square
+            const fromY = fromRank * 50 + 25 + borderOffset;
+            const toX = toFile * 50 + 25 + borderOffset;
+            const toY = toRank * 50 + 25 + borderOffset;
+
+            // Calculate arrow properties
+            const deltaX = toX - fromX;
+            const deltaY = toY - fromY;
+            const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+            const angle = Math.atan2(deltaY, deltaX) * (180 / Math.PI);
+
+            // Debug logging
+            console.log(`Move: ${fromSquare} → ${toSquare}`);
+            console.log(`Coordinates: (${fromX}, ${fromY}) → (${toX}, ${toY})`);
+            console.log(`Delta: (${deltaX}, ${deltaY}), Distance: ${distance.toFixed(1)}, Angle: ${angle.toFixed(1)}°`);
+
+            // Create move trace overlay positioned relative to the board container
+            const traceOverlay = document.createElement('div');
+            traceOverlay.className = 'move-trace';
+            traceOverlay.style.position = 'absolute';
+            traceOverlay.style.top = '0';
+            traceOverlay.style.left = '0';
+            traceOverlay.style.width = '100%';
+            traceOverlay.style.height = '100%';
+            traceOverlay.style.pointerEvents = 'none';
+            traceOverlay.style.zIndex = '100';
+
+            // Create arrow element
+            const arrow = document.createElement('div');
+            arrow.className = 'move-arrow';
+            arrow.style.position = 'absolute';
+            arrow.style.left = fromX + 'px';
+            arrow.style.top = fromY + 'px';
+            arrow.style.width = distance + 'px';
+            arrow.style.height = '8px';
+            arrow.style.background = 'rgba(255, 215, 0, 0.8)';
+            arrow.style.borderRadius = '8px';
+            arrow.style.transformOrigin = 'left center';
+            arrow.style.boxShadow = '0 0 15px rgba(255, 215, 0, 0.6)';
+
+            // Set CSS custom property for the rotation angle so animation can use it
+            arrow.style.setProperty('--rotation-angle', angle + 'deg');
+            arrow.style.animation = 'moveTrace 1s ease-in-out';
+
+            // Create arrowhead
+            const arrowHead = document.createElement('div');
+            arrowHead.style.position = 'absolute';
+            arrowHead.style.right = '-12px';
+            arrowHead.style.top = '-8px';
+            arrowHead.style.width = '0';
+            arrowHead.style.height = '0';
+            arrowHead.style.borderLeft = '12px solid rgba(255, 215, 0, 0.8)';
+            arrowHead.style.borderTop = '12px solid transparent';
+            arrowHead.style.borderBottom = '12px solid transparent';
+            arrow.appendChild(arrowHead);
+
+            traceOverlay.appendChild(arrow);
+            boardContainer.appendChild(traceOverlay);
+
+            // Highlight from and to squares
+            const squares = boardContainer.querySelectorAll('.chess-square');
+            squares.forEach((square, index) => {
+                const rank = Math.floor(index / 8);
+                const file = index % 8;
+                const squareNotation = files[file] + (8 - rank);
+
+                if (squareNotation === fromSquare || squareNotation === toSquare) {
+                    square.classList.add('square-highlight');
+                }
+            });
+
+            // Remove animation after 1 second
+            setTimeout(() => {
+                traceOverlay.remove();
+                squares.forEach(square => {
+                    square.classList.remove('square-highlight');
+                });
+            }, 1000);
+        }
+
+        function ChessBoard({ fen, onMove, lastMove }) {
+            const [selected, setSelected] = useState(null);
+            const board = fenToBoard(fen);
+
+            // Show move trace when lastMove changes
+            useEffect(() => {
+                if (lastMove && lastMove.from && lastMove.to) {
+                    // Add a small delay to ensure board has updated
+                    setTimeout(() => {
+                        showMoveTrace(lastMove.from, lastMove.to);
+                    }, 100);
+                }
+            }, [lastMove]);
+
+            const handleSquareClick = (rank, file) => {
+                const square = files[file] + (8 - rank);
+                if (selected) {
+                    if (selected !== square) {
+                        onMove(selected, square);
+                    }
+                    setSelected(null);
+                } else {
+                    setSelected(square);
+                }
+            };
+
+            // Create rank labels (8, 7, 6, 5, 4, 3, 2, 1)
+            const rankLabels = [];
+            for (let i = 8; i >= 1; i--) {
+                rankLabels.push(React.createElement('div', {
+                    key: `rank-${i}`,
+                    className: 'rank-label'
+                }, i));
+            }
+
+            // Create file labels (a, b, c, d, e, f, g, h)
+            const fileLabels = files.map(file =>
+                React.createElement('div', {
+                    key: `file-${file}`,
+                    className: 'file-label'
+                }, file.toUpperCase())
+            );
+
+            return React.createElement('div', { className: 'chess-board-container' },
+                // Rank labels (left side)
+                React.createElement('div', { className: 'rank-labels' }, ...rankLabels),
+                // Chess board
+                React.createElement('div', { className: 'chess-board' },
+                    board.map((row, rank) =>
+                        React.createElement('div', { className: 'chess-row', key: rank },
+                            row.map((piece, file) => {
+                                const square = files[file] + (8 - rank);
+                                return React.createElement(Square, {
+                                    key: square,
+                                    square: square,
+                                    piece: piece,
+                                    isSelected: selected === square,
+                                    onClick: () => handleSquareClick(rank, file)
+                                });
+                            })
+                        )
+                    )
+                ),
+                // File labels (bottom)
+                React.createElement('div', { className: 'file-labels' }, ...fileLabels)
+            );
+        }
+
+        function CapturedPiecesPanel({ capturedPieces }) {
+            return React.createElement('div', { className: 'sidebar' },
+                React.createElement('h3', null, 'Captured Pieces'),
+                React.createElement('div', { className: 'player-section' },
+                    React.createElement('div', { className: 'player-label' }, 'White Captured:'),
+                    React.createElement('div', { className: 'captured-pieces' },
+                        capturedPieces.white.map((piece, index) =>
+                            React.createElement('span', {
+                                key: index,
+                                className: 'captured-piece'
+                            }, pieceToSymbol(piece.toLowerCase()))
+                        )
+                    )
+                ),
+                React.createElement('div', { className: 'player-section' },
+                    React.createElement('div', { className: 'player-label' }, 'Black Captured:'),
+                    React.createElement('div', { className: 'captured-pieces' },
+                        capturedPieces.black.map((piece, index) =>
+                            React.createElement('span', {
+                                key: index,
+                                className: 'captured-piece'
+                            }, pieceToSymbol(piece.toUpperCase()))
+                        )
+                    )
+                )
+            );
+        }
+
+        function MoveLogPanel({ moveHistory }) {
+            return React.createElement('div', { className: 'sidebar' },
+                React.createElement('h3', null, 'Move History'),
+                React.createElement('div', { className: 'move-log' },
+                    moveHistory.map((movePair, index) =>
+                        React.createElement('div', { key: index, className: 'move-entry' },
+                            React.createElement('span', { className: 'move-number' }, `${index + 1}.`),
+                            React.createElement('div', { className: 'move-pair' },
+                                React.createElement('div', { className: 'white-move' },
+                                    React.createElement('div', { className: 'move-label' }, 'White'),
+                                    React.createElement('span', null, movePair.white || '-')
+                                ),
+                                React.createElement('div', { className: 'black-move' },
+                                    React.createElement('div', { className: 'move-label' }, 'Black'),
+                                    React.createElement('span', null, movePair.black || '-')
+                                )
+                            )
+                        )
+                    )
+                )
+            );
+        }
+
+        function GameInfoPanel({ elapsedTime }) {
+            const formatTime = (seconds) => {
+                const mins = Math.floor(seconds / 60);
+                const secs = seconds % 60;
+                return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            };
+
+            return React.createElement('div', { className: 'sidebar' },
+                React.createElement('h3', null, 'Game Info'),
+                React.createElement('div', { style: { textAlign: 'center' } },
+                    React.createElement('div', {
+                        style: {
+                            fontSize: '14px',
+                            color: '#fff',
+                            marginBottom: '5px',
+                            fontWeight: 'bold'
+                        }
+                    }, 'Total Time Elapsed'),
+                    React.createElement('div', { className: 'timer' }, formatTime(elapsedTime))
+                )
+            );
+        }
+
+        function App() {
+            const [fen, setFen] = useState('');
+            const [gameStatus, setGameStatus] = useState('');
+            const [lastBotMove, setLastBotMove] = useState('');
+            const [userColor, setUserColor] = useState('');
+            const [capturedPieces, setCapturedPieces] = useState({ white: [], black: [] });
+            const [moveHistory, setMoveHistory] = useState([]);
+            const [elapsedTime, setElapsedTime] = useState(0);
+            const [gameStartTime, setGameStartTime] = useState(null);
+            const [isGameStarted, setIsGameStarted] = useState(false);
+            const [lastMove, setLastMove] = useState(null);
+
+            // Timer effect
+            useEffect(() => {
+                if (gameStartTime) {
+                    const interval = setInterval(() => {
+                        setElapsedTime(Math.floor((Date.now() - gameStartTime) / 1000));
+                    }, 1000);
+                    return () => clearInterval(interval);
+                }
+            }, [gameStartTime]);
+
+            useEffect(() => {
+                const handler = (event) => {
+                    const message = event.data;
+                    if (message.command === 'update' || message.command === 'invalid') {
+                        setFen(message.fen);
+                    } else if (message.command === 'bot-move') {
+                        setFen(message.fen);
+                        setLastBotMove(`Bot played: ${message.move}`);
+                        if (message.capturedPieces) {
+                            setCapturedPieces(message.capturedPieces);
+                        }
+                        if (message.moveHistory) {
+                            setMoveHistory(message.moveHistory);
+                        }
+                        if (message.lastMove) {
+                            setLastMove(message.lastMove);
+                        }
+                        // Clear bot move message after 3 seconds
+                        setTimeout(() => setLastBotMove(''), 3000);
+                    } else if (message.command === 'game-over') {
+                        setGameStatus(message.result);
+                    } else if (message.command === 'new-game') {
+                        setFen(message.fen);
+                        setGameStatus('');
+                        setLastBotMove('');
+                        setUserColor('');
+                        setCapturedPieces({ white: [], black: [] });
+                        setMoveHistory([]);
+                        setElapsedTime(0);
+                        setGameStartTime(Date.now());
+                        setIsGameStarted(true);
+                        setLastMove(null);
+                    } else if (message.command === 'user-color') {
+                        setUserColor(`You are playing as: ${message.color}`);
+                        // Only start timer if game hasn't been started yet
+                        if (!isGameStarted) {
+                            setGameStartTime(Date.now());
+                            setIsGameStarted(true);
+                        }
+                    } else if (message.command === 'move-update') {
+                        setFen(message.fen);
+                        if (message.capturedPieces) {
+                            setCapturedPieces(message.capturedPieces);
+                        }
+                        if (message.moveHistory) {
+                            setMoveHistory(message.moveHistory);
+                        }
+                        if (message.lastMove) {
+                            setLastMove(message.lastMove);
+                        }
+                    } else if (message.command === 'bot-thinking') {
+                        setLastBotMove('Bot is thinking...');
+                    }
+                };
+                window.addEventListener('message', handler);
+                vscode.postMessage({ command: 'request-fen' });
+                return () => window.removeEventListener('message', handler);
+            }, []);
+
+            const handleMove = (from, to) => {
+                vscode.postMessage({ command: 'move', from, to });
+            };
+
+            return React.createElement('div', null,
+                React.createElement('h2', null, 'Chess Board'),
+                userColor ? React.createElement('div', {
+                    style: {
+                        textAlign: 'center',
+                        margin: '10px 0',
+                        color: '#4CAF50',
+                        fontWeight: 'bold'
+                    }
+                }, userColor) : null,
+                React.createElement('div', { className: 'game-container' },
+                    // Left sidebar - Captured pieces
+                    React.createElement(CapturedPiecesPanel, { capturedPieces: capturedPieces }),
+                    // Center - Chess board and controls
+                    React.createElement('div', { className: 'center-column' },
+                        fen ? React.createElement(ChessBoard, { fen: fen, onMove: handleMove, lastMove: lastMove }) : React.createElement('div', null, 'Loading...'),
+                        gameStatus ? React.createElement('div', {
+                            className: 'recommendation',
+                            style: {
+                                border: '2px solid #ff6b6b',
+                                backgroundColor: 'rgba(255, 107, 107, 0.1)',
+                                color: '#ff6b6b',
+                                textAlign: 'center',
+                                fontWeight: 'bold',
+                                marginTop: '20px'
+                            }
+                        }, gameStatus) : null,
+                        lastBotMove ? React.createElement('div', {
+                            className: 'recommendation',
+                            style: {
+                                border: '2px solid #51cf66',
+                                backgroundColor: 'rgba(81, 207, 102, 0.1)',
+                                color: '#51cf66',
+                                textAlign: 'center',
+                                marginTop: '10px'
+                            }
+                        }, lastBotMove) : null,
+                        React.createElement('div', { style: { textAlign: 'center', margin: '20px 0' } },
+                            React.createElement('button', {
+                                onClick: () => vscode.postMessage({ command: 'new-game' }),
+                                style: {
+                                    background: '#ff6b6b'
+                                }
+                            }, 'New Game')
+                        )
+                    ),
+                    // Right sidebar - Move history and game info
+                    React.createElement('div', { style: { display: 'flex', flexDirection: 'column', gap: '20px' } },
+                        React.createElement(GameInfoPanel, { elapsedTime: elapsedTime }),
+                        React.createElement(MoveLogPanel, { moveHistory: moveHistory })
+                    )
+                )
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(React.createElement(App));
+    </script>
+</body>
+
+</html>
