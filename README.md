@@ -2,6 +2,10 @@
 
 Play chess directly in VS Code with an intelligent AI opponent, clickable move recommendations from chat, and smooth visual animations.
 
+## 🎥 Demo
+
+![Chess Extension Demo](https://github.com/user-attachments/assets/2d752a73-3745-40ff-9d4c-a0372401f18d)
+
 ## ✨ Key Features
 
 - **Interactive Chess Board**: Click-to-move gameplay with full rules validation
