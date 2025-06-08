@@ -3,6 +3,23 @@
     "displayName": "Chess Board",
     "description": "Interactive chess board with AI-powered move recommendations for VS Code",
     "version": "0.0.1",
+    "publisher": "ekzhu",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/ekzhu/chess-extension-for-vscode.git"
+    },
+    "bugs": {
+        "url": "https://github.com/ekzhu/chess-extension-for-vscode/issues"
+    },
+    "homepage": "https://github.com/ekzhu/chess-extension-for-vscode#readme",
+    "keywords": [
+        "chess",
+        "game",
+        "ai",
+        "chat",
+        "strategy",
+        "board game"
+    ],
     "engines": {
         "vscode": "^1.100.0"
     },
@@ -40,7 +57,9 @@
         "watch": "tsc -watch -p ./",
         "pretest": "npm run compile && npm run lint",
         "lint": "eslint src",
-        "test": "vscode-test"
+        "test": "vscode-test",
+        "package": "vsce package",
+        "publish": "vsce publish --yarn"
     },
     "dependencies": {
         "@vscode/chat-extension-utils": "^0.0.0-alpha.5",
