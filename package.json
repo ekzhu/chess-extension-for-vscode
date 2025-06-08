@@ -1,7 +1,7 @@
 {
     "name": "chess-extension",
-    "displayName": "Chess Board",
-    "description": "Interactive chess board with AI-powered move recommendations for VS Code",
+    "displayName": "Chess",
+    "description": "Interactive chess game with AI-powered move recommendations for VS Code",
     "version": "0.0.1",
     "publisher": "ekzhu",
     "repository": {
@@ -34,7 +34,7 @@
         "commands": [
             {
                 "command": "helloworld.openChessBoard",
-                "title": "Chess Board: Open Chess Board"
+                "title": "Chess: Open Chess Board"
             },
             {
                 "command": "helloworld.applyMove",

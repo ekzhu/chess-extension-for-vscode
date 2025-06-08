@@ -18,7 +18,7 @@ Play chess directly in VS Code with an intelligent AI opponent, clickable move r
 ## 🚀 Quick Start
 
 1. Open Command Palette (`Ctrl+Shift+P`)
-2. Run "Chess Board: Open Chess Board"
+2. Run "Chess: Open Chess Board"
 3. Click pieces to move them
 4. Use `@chess-master suggest a move` in chat for AI recommendations
 

@@ -83,11 +83,11 @@ export function activate(context: vscode.ExtensionContext) {
     const chatParticipant = vscode.chat.createChatParticipant('chess-master', openAIChatHandler);
     context.subscriptions.push(chatParticipant);
 
-    // Register command to open chess board webview
+    // Register command to open chess webview
     const disposable = vscode.commands.registerCommand('helloworld.openChessBoard', () => {
         const panel = vscode.window.createWebviewPanel(
             'chessBoard',
-            'Chess Board',
+            'Chess',
             vscode.ViewColumn.One,
             {
                 enableScripts: true,
@@ -249,7 +249,7 @@ export function activate(context: vscode.ExtensionContext) {
             }
 
             if (!activeWebviewPanel) {
-                vscode.window.showErrorMessage('Chess board is not open.');
+                vscode.window.showErrorMessage('Chess is not open.');
                 return;
             }
 
@@ -520,7 +520,7 @@ const chessAnalysisTool: AdHocChatTool<{ requestType: string }> = {
 // Enhanced chat handler using chat extension utils
 const openAIChatHandler: vscode.ChatRequestHandler = async (request, context, stream, token) => {
     if (!chessGame) {
-        stream.markdown('No chess game is currently active. Please open the chess board first using the "Chess Board: Open Chess Board" command.');
+        stream.markdown('No chess game is currently active. Please open the chess board first using the "Chess: Open Chess Board" command.');
         return;
     }
 
