@@ -11,6 +11,5 @@ src/**
 DEMO.md
 PUBLISH.md
 .github/**
-node_modules/**
 npm-debug.log
 *.vsix
