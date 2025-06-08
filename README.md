@@ -15,6 +15,21 @@ Play chess directly in VS Code with an intelligent AI opponent, clickable move r
 - **Game Management**: Timer, move history, captured pieces, and new game functionality
 - **Smart Validation**: Outdated move buttons automatically invalidated as game progresses
 
+## 📦 Installation
+
+### From VS Code Marketplace
+
+1. **Direct Install**: [Chess with AI](https://marketplace.visualstudio.com/items?itemName=ekzhu.chess-extension)
+2. **Via VS Code**: 
+   - Open VS Code
+   - Go to Extensions (`Ctrl+Shift+X`)
+   - Search for "Chess with AI" or "ekzhu.chess-extension"
+   - Click "Install"
+3. **Command Line**: 
+   ```bash
+   code --install-extension ekzhu.chess-extension
+   ```
+
 ## 🚀 Quick Start
 
 1. Open Command Palette (`Ctrl+Shift+P`)
