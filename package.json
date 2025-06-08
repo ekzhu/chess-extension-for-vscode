@@ -2,8 +2,9 @@
     "name": "chess-extension",
     "displayName": "Chess with AI",
     "description": "Interactive chess game with AI-powered move recommendations for VS Code",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "publisher": "ekzhu",
+    "icon": "icon.png",
     "repository": {
         "type": "git",
         "url": "https://github.com/ekzhu/chess-extension-for-vscode.git"
